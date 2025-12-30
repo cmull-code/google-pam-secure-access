@@ -10,7 +10,7 @@
 
     # 2. Your Source of Truth
     # A raw text file with one GitHub username per line.
-    user_list_url: "https://raw.githubusercontent.com/cmull-code/google-pam-secure-access/access_list.txt"
+    user_list_url: "https://raw.githubusercontent.com/cmull-code/google-pam-secure-access/main/access_list.txt"
 
   tasks:
     # =================================================================
