@@ -1,0 +1,22 @@
+# Ansible Managed: SECURITY LEVEL HIGH
+Port 22
+Protocol 2
+UsePAM yes
+
+# 1. No Passwords, No Root
+PermitRootLogin no
+PasswordAuthentication no
+PermitEmptyPasswords no
+ChallengeResponseAuthentication yes
+
+# 2. Force Key + OTP
+AuthenticationMethods publickey,keyboard-interactive
+
+# 3. Dynamic Keys
+AuthorizedKeysCommand /usr/local/bin/fetch_keys.sh %u
+AuthorizedKeysCommandUser nobody
+
+# 4. Standard Security
+X11Forwarding no
+PrintMotd no
+Subsystem sftp internal-sftp

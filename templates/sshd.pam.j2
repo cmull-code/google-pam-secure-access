@@ -1,0 +1,15 @@
+# Ansible Managed: /etc/pam.d/sshd
+
+# 1. ADMIN WHITELIST (The Break-Glass)
+# If the user is the admin defined in Ansible, skip 2FA.
+auth [success=1 default=ignore] pam_succeed_if.so user in {{ admin_user }}
+
+# 2. GOOGLE AUTHENTICATOR (The Gatekeeper)
+# For everyone else, this is required.
+auth required pam_google_authenticator.so nullok
+
+# 3. STANDARD SESSION (No Password Prompt)
+account required pam_nologin.so
+@include common-account
+@include common-session
+@include common-password

@@ -1,0 +1,19 @@
+#!/bin/bash
+# Ansible Managed: Force 2FA Setup
+
+# 1. IGNORE ADMIN
+if [[ "$USER" == "{{ admin_user }}" ]]; then
+    return 0
+fi
+
+# 2. TRAP EVERYONE ELSE
+if [[ -n "$SSH_CLIENT" || -n "$SSH_TTY" ]]; then
+    SECRET_FILE="${HOME}/.google_authenticator"
+    if [ ! -f "$SECRET_FILE" ]; then
+        echo "WARNING: 2FA Setup Required."
+        trap "exit 1" SIGINT
+        # Setup: Time-based, No-reuse, Force, Rate-limit
+        google-authenticator -t -d -f -r 3 -R 30 -w 3
+        trap - SIGINT
+    fi
+fi
