@@ -1,6 +1,7 @@
 ###
 # This script is no longer used. It is here for reference.
 # Problem was this would allow an attacker to run commands like 'scp' without 2FA or even something like ssh cmull-code@<server> "id"
+# Problem was Linux only executes scripts in /etc/profile.d/ when a user starts a Login Shell
 ###
 #!/bin/bash
 # Ansible Managed: Force 2FA for EVERYONE

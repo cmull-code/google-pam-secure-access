@@ -24,7 +24,7 @@ if [ ! -f "$SECRET_FILE" ]; then
 fi
 
 #EXECUTION PASS-THROUGH
-# If we are here, 2FA is set up. Now we let them do
+# If we are here, 2FA is set up. Now we let them run either cmd or get shell
 
 if [ -n "$SSH_ORIGINAL_COMMAND" ]; then
     eval "$SSH_ORIGINAL_COMMAND"
