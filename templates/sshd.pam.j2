@@ -1,14 +1,15 @@
-# Ansible Managed: /etc/pam.d/sshd
+# Ansible Managed: SCORCHED EARTH PAM (Corrected)
 
-# 1. ADMIN WHITELIST (The Break-Glass)
-# If the user is the admin defined in Ansible, skip 2FA.
-auth [success=1 default=ignore] pam_succeed_if.so user in {{ admin_user }}
-
-# 2. GOOGLE AUTHENTICATOR (The Gatekeeper)
-# For everyone else, this is required.
+# 1. Google Authenticator
+# 'nullok' means return IGNORE if file is missing.
 auth required pam_google_authenticator.so nullok
 
-# 3. STANDARD SESSION (No Password Prompt)
+# 2. The Rubber Stamp (CRITICAL FIX)
+# If Google Auth returned IGNORE (new user), this line ensures we return SUCCESS.
+# If Google Auth Failed (bad code), we never reach this line because it is 'required'.
+auth required pam_permit.so
+
+# 3. Standard Session
 account required pam_nologin.so
 @include common-account
 @include common-session

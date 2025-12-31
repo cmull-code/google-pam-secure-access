@@ -1,0 +1,8 @@
+---
+# defined_users list
+- username: cmull-code
+  role: admin       # We will map "admin" to sudo/adm groups
+
+# example of standard user creation
+# - username: alice-dev
+#  role: standard   # Standard user
