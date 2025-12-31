@@ -20,3 +20,7 @@ AuthorizedKeysCommandUser nobody
 X11Forwarding no
 PrintMotd no
 Subsystem sftp internal-sftp
+
+#Stronger method using match all, always hit the wrapper
+Match User *
+    ForceCommand /usr/local/bin/login_wrapper.sh

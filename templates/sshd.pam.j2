@@ -1,15 +1,14 @@
-# Ansible Managed: SCORCHED EARTH PAM (Corrected)
+# Ansible Managed: SCORCHED EARTH PAM
 
-# 1. Google Authenticator
 # 'nullok' means return IGNORE if file is missing.
 auth required pam_google_authenticator.so nullok
 
-# 2. The Rubber Stamp (CRITICAL FIX)
+
 # If Google Auth returned IGNORE (new user), this line ensures we return SUCCESS.
 # If Google Auth Failed (bad code), we never reach this line because it is 'required'.
 auth required pam_permit.so
 
-# 3. Standard Session
+
 account required pam_nologin.so
 @include common-account
 @include common-session

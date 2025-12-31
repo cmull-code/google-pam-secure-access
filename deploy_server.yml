@@ -79,14 +79,14 @@
         owner: root
         group: root
 
-    - name: Install 2FA Enforcement Script
-      ansible.builtin.template:
-        src: templates/force_2fa.sh.j2
-        dest: /etc/profile.d/force_2fa.sh
+    - name: Install Login Wrapper (New method to avoid softgating and allowing things like scp)
+      ansible.builtin.copy:
+        src: files/login_wrapper.sh
+        dest: /usr/local/bin/login_wrapper.sh
         mode: '0755'
         owner: root
         group: root
-
+        
     # =================================================================
     # 5. CONFIGURE SSH & PAM
     # =================================================================
