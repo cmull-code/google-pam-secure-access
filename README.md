@@ -146,14 +146,9 @@ This playbook is designed to run **EXACTLY ONCE** against a fresh server. It wil
 
 ### Execution
 
-1. **Load your bootstrap key** into SSH agent (this avoids putting the private key path in files):
-```bash
-ssh-add path/to/bootstrap_key.pem
+(Remember we use an initial .pem bootstrap key, in my examples I use AWS but depending on company provisioning setup for new servers this could change. If we had a batch of 100 servers provisioned we would inject the initial pem to work with ubuntu. Because this is deleted after run it takes away risk of this .pem being abused on servers that then go on to run critial services)
 
-```
-
-
-2. **Run the playbook:**
+1. **Run the playbook:**
 ```bash
 ansible-playbook -i inventory.ini deploy_server.yml
 
@@ -195,6 +190,16 @@ For every future login, the user must provide both their key and the current cod
 3. Server prompts: `Verification code:`
 4. User enters current 6-digit code from app.
 5. Access granted.
+
+
+### Chris thought/feelings
+So, I decided to go with the "scorched earth" model, where we provision and seal access behind us. This was because I wanted to adhere strictly to the task's wording: "Login is only allowed via SSH key and one-time password (OTP) using Google Authenticator."
+
+IMO, I would prefer to have a way for admins to bypass this for administration purposes, as it limits our ability to run Ansible on the servers thereafter since the OTP is interactive (there might be a way to pass this, but it's outside the scope for now). However, for now, it's nice to be able to provision admin permissions as per the access_list.yml file (a pull request would require approvals, ensuring a "four-eyes" principle on user/admin additions).
+
+I worked with what I had and utilized GitHub as a way to sync SSH keys to our server(s). In a trading environment, we would probably want some on-prem HA key server so we aren't reliant on GitHub's availability and have more resilience. (Also I would image working with systems teams we could hook into how they do user creation/home dir creation on servers LDAP or the likes)
+
+Using GitHub as a source of truth is nice. Although I have not implemented it, we could, of course, utilize GitHub Actions—for example, so that when the inventory file is updated, the Ansible playbook runs on fresh servers. It would also be a good way to make sure the access_list.yml is kept up-to-date on the servers. This would then mean bootstrap key would be kept as a github variable or perhaps in AWS secret manager and retrieved on pipeline run.
 
 ```
 
