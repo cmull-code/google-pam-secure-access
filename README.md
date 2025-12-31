@@ -134,7 +134,7 @@ Edit the `vars` section to point to your GitHub repository.
 ```yaml
   vars:
     admin_user: "ubuntu" # The bootstrap user to be locked out
-    user_list_url: "[https://raw.githubusercontent.com/YOUR_GITHUB_USER/YOUR_REPO/main/users.yml](https://raw.githubusercontent.com/YOUR_GITHUB_USER/YOUR_REPO/main/users.yml)"
+    user_list_url: "https://raw.githubusercontent.com/YOUR_GITHUB_USER/YOUR_REPO/main/users.yml"
 
 ```
 
