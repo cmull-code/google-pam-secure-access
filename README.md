@@ -152,8 +152,9 @@ This playbook is designed to run **EXACTLY ONCE** against a fresh server. It wil
 
 1. **Run the playbook:**
 ```bash
-ansible-playbook -i inventory.ini deploy_server.yml
-
+ansible-playbook -i inventory.ini playbooks/deploy_server.yml \
+  -u ubuntu \
+  --ssh-common-args='-o StrictHostKeyChecking=no'
 ```
 
 
@@ -192,6 +193,76 @@ For every future login, the user must provide both their key and the current cod
 3. Server prompts: `Verification code:`
 4. User enters current 6-digit code from app.
 5. Access granted.
+
+
+## Administrative Operations
+
+Since the servers enforce mandatory interactive 2FA, standard automation tools cannot connect directly. Administrators must use **SSH Multiplexing** to authenticate once and tunnel automation commands through an open socket.
+
+### 1. Setup (One-Time)
+Add these aliases to your local shell configuration (`~/.zshrc` or `~/.bashrc`) to streamline the workflow:
+
+```bash
+# Open a persistent background connection (The "Open Door")
+alias admin-connect="ssh -M -S /tmp/ansible_mux -fnNT"
+
+# Close the background connection
+alias admin-disconnect="ssh -S /tmp/ansible_mux -O exit"
+
+```
+
+*Reload your shell: `source ~/.zshrc*`
+
+### 2. Emergency Access (Inject OTP)
+
+If a user loses their phone, you can inject a single-use 8-digit scratch code into their account.
+
+**How it works:**
+The Ansible script generates a random code locally, appends it to the user's secret file on the server, and prints the code to your terminal screen. You then copy-paste this code to the user.
+
+```mermaid
+sequenceDiagram
+    participant Admin
+    participant Ansible
+    participant Server
+    participant User
+
+    Note over Admin,Server: PHASE 1: GENERATION
+    Admin->>Server: Open Connection (admin-connect) + Type 2FA
+    Admin->>Ansible: Run 'inject_otp.yml'
+    Ansible->>Server: Generate & Append Code (e.g. 88229911)
+    Server-->>Ansible: Success
+    Ansible->>Admin: PRINT TO SCREEN: "Emergency Code: 88229911"
+    
+    Note over Admin,User: PHASE 2: HANDOFF
+    Admin->>User: Sends code via secure channel (Signal/Slack)
+    
+    Note over User,Server: PHASE 3: ACCESS & BURN
+    User->>Server: SSH Connect
+    Server->>User: Prompt "Verification code:"
+    User->>Server: Enters "88229911"
+    Server->>Server: Validates & DELETES code instantly
+    Server->>User: Access Granted
+
+```
+
+**Execution:**
+
+```bash
+# 1. Connect (Type your 2FA code)
+admin-connect cmull-code@<SERVER_IP>
+
+# 2. Run Playbook
+ansible-playbook -i inventory.ini playbooks/inject_otp.yml \
+  -u cmull-code \ #admin user
+  -e "username=alice-dev" \
+  --ssh-common-args='-o StrictHostKeyChecking=no -o ControlPath=/tmp/ansible_mux'
+
+# 3. Disconnect
+admin-disconnect cmull-code@<SERVER_IP>
+
+```
+
 
 
 ### Chris thought/feelings

@@ -73,7 +73,7 @@
     # =================================================================
     - name: Install Key Fetching Script
       ansible.builtin.copy:
-        src: files/fetch_keys.sh
+        src: ../files/fetch_keys.sh
         dest: /usr/local/bin/fetch_keys.sh
         mode: '0755'
         owner: root
@@ -81,7 +81,7 @@
 
     - name: Install Login Wrapper (New method to avoid softgating and allowing things like scp)
       ansible.builtin.copy:
-        src: files/login_wrapper.sh
+        src: ../files/login_wrapper.sh
         dest: /usr/local/bin/login_wrapper.sh
         mode: '0755'
         owner: root
@@ -92,7 +92,7 @@
     # =================================================================
     - name: Deploy Hardened SSHD Config
       ansible.builtin.template:
-        src: templates/sshd_config.j2
+        src: ../templates/sshd_config.j2
         dest: /etc/ssh/sshd_config
         owner: root
         group: root
@@ -102,7 +102,7 @@
 
     - name: Deploy PAM Configuration
       ansible.builtin.template:
-        src: templates/sshd.pam.j2
+        src: ../templates/sshd.pam.j2
         dest: /etc/pam.d/sshd
         owner: root
         group: root

@@ -1,0 +1,42 @@
+---
+- name: Generate One-Time Emergency Access Code
+  hosts: targets
+  become: true
+  vars:
+    target_user: "{{ username }}" 
+
+  tasks:
+    - name: Verify User and 2FA File
+      ansible.builtin.stat:
+        path: "/home/{{ target_user }}/.google_authenticator"
+      register: auth_file
+
+    - name: Fail if no 2FA config exists
+      ansible.builtin.fail:
+        msg: "User {{ target_user }} has not set up 2FA yet."
+      when: not auth_file.stat.exists
+
+    - name: Generate Random 8-Digit Code
+      ansible.builtin.set_fact:
+        # Generate a random number between 10000000 and 99999999
+        emergency_code: "{{ 10000000 + 90000000 | random }}"
+
+    - name: Inject Code into Google Auth File
+      ansible.builtin.lineinfile:
+        path: "/home/{{ target_user }}/.google_authenticator"
+        line: "{{ emergency_code }}"
+        insertafter: EOF
+        owner: "{{ target_user }}"
+        mode: '0400'
+
+    - name: Display Code to Admin
+      ansible.builtin.debug:
+        msg: 
+          - "---------------------------------------------------"
+          - "  ONE-TIME ACCESS GRANTED FOR: {{ target_user }}"
+          - "  Emergency Code: {{ emergency_code }}"
+          - "---------------------------------------------------"
+          - "  1. Tell the user to use this code at the 'Verification code:' prompt."
+          - "  2. Once used, it will be automatically deleted (burned)."
+          - "  3. Their regular phone app will continue to work."
+          - "---------------------------------------------------"
