@@ -122,6 +122,8 @@ Define the IP address of your target server(s) and the bootstrap user.
 [targets:vars]
 ansible_user=ubuntu
 ansible_ssh_common_args='-o StrictHostKeyChecking=no'
+ansible_ssh_private_key_file=/path/to/initial/bootstrap.pem  # <-- Replace the bootstrapping pem path (useless after provisioning)
+
 
 ```
 
